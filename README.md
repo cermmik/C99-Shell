@@ -2,7 +2,7 @@
 
 PHP 7 and safe-build Update of the popular C99 variant of PHP Shell.
 
-c99shell.php v.2.1 (PHP 7) (1.12.2019) Updated by: KaizenLouie for PHP 7 and cermmik for MySQL
+Zip archive is encrypted to avoid antivirus detection (**password:** c99shell).
 
 
 # About C99Shell
