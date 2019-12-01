@@ -1,4 +1,4 @@
-# C99 Shell with PHP7 support
+# C99 WebShell with PHP7 support
 
 PHP 7 and safe-build Update of the popular C99 variant of PHP Shell.
 
